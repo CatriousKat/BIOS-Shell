@@ -1,4 +1,10 @@
 # BIOS-Shell
 A simple shell for Legacy BIOS systems. <br>
-Current commands are: help, cls, echo, ver, date, time, exit <br>
-Works on QEMU, but every command is invalid on real BIOS/CSM<br>
+Current commands are: help, cls, echo, ver, date, exit <br>
+# How to run
+1. Plug in a USB drive
+2. Download Rufus
+3. Select shell.bin as the bootable media
+4. Click START
+5. Reboot your PC into the Boot menu
+6. Select your USB drive
