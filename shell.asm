@@ -8,6 +8,7 @@ start:
     mov es, ax
     mov ss, ax
     mov sp, 0x7c00
+    cld
     sti
     mov ax, 0x0003
     int 0x10
@@ -19,7 +20,7 @@ start:
 ml:
     mov ah, 0x0e
     mov al, '>'
-    mov bx, 0x0007
+    mov bx, 7
     int 0x10
     mov di, buf
 rd:
@@ -146,7 +147,7 @@ pr_n:
     jmp ml
 
 pr:
-    mov bx, 0x0007
+    mov bx, 7
 pr_c:
     lodsb
     test al, al
@@ -159,7 +160,7 @@ pr_c:
 
 pc:
     mov ah, 0x0e
-    mov bx, 0x0007
+    mov bx, 7
     int 0x10
     ret
 
@@ -177,24 +178,18 @@ eq:
     push si
     push di
 .l:
-    mov al, [si]
-    mov bl, [di]
-    cmp al, bl
+    lodsb
+    scasb
     jne .n
     test al, al
-    jz .y
-    inc si
-    inc di
-    jmp .l
-.y:
-    pop di
-    pop si
+    jnz .l
     stc
-    ret
+    jmp .x
 .n:
+    clc
+.x:
     pop di
     pop si
-    clc
     ret
 
 ncmp:
@@ -221,7 +216,7 @@ ncmp:
     ret
 
 nl    db 13, 10, 0
-err_m db ' bad cmd', 13, 10, 0
+err_m db 'err', 13, 10, 0
 c_hlp db 'help', 0
 c_cls db 'cls', 0
 c_ver db 'ver', 0
@@ -229,9 +224,14 @@ c_ech db 'echo ', 0
 c_dte db 'date', 0
 c_ext db 'exit', 0
 h_txt db 'help,cls,ver,echo,date,exit', 13, 10, 0
-v_msg db 'BIOS Shell v1.0', 0
+v_msg db 'BIOS Shell v1.1', 0
 
-times 510-($-$$) db 0
+times 446-($-$$) db 0
+
+db 0x80, 0x00, 0x01, 0x00, 0x01, 0xFF, 0xFF, 0xFF
+dd 0x00000001, 0x00000B3F
+times 48 db 0
+
 dw 0xAA55
 
-buf   equ $
+buf   equ 0x0500
