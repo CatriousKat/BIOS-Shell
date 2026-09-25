@@ -1,6 +1,7 @@
 # BIOS-Shell
 A simple shell for Legacy BIOS systems. <br>
 Current commands are: help, cls, echo, ver, date, exit <br>
+This project can be used for educational purposes. <br>
 # How to run
 1. Plug in a USB drive
 2. Download Rufus
