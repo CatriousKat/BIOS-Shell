@@ -1,26 +1,22 @@
+; BIOS Shell v1.2
+; This project can be used for educational purpouses.
+
 [org 0x7c00]
 bits 16
 
 start:
     cli
     xor ax, ax
-    mov ds, ax
-    mov es, ax
     mov ss, ax
     mov sp, 0x7c00
+    mov ds, ax
+    mov es, ax
     cld
     sti
-    mov ax, 0x0003
-    int 0x10
-    mov ax, 0x0100
-    mov cx, 0x2607
-    int 0x10
-    call cs_fn
+    jmp cs_fn
 
 ml:
-    mov ah, 0x0e
-    mov al, '>'
-    mov bx, 7
+    mov ax, 0x0e3e
     int 0x10
     mov di, buf
 rd:
@@ -29,21 +25,17 @@ rd:
     cmp al, 13
     je ex
     cmp al, 8
-    jne st_ch
-    cmp di, buf
-    jle rd
-    dec di
-    mov ax, 0x0e08
-    int 0x10
-    mov al, ' '
-    int 0x10
-    mov al, 8
-    int 0x10
-    jmp rd
-st_ch:
+    je .bs
     stosb
     mov ah, 0x0e
     int 0x10
+    jmp rd
+.bs:
+    cmp di, buf
+    jle rd
+    dec di
+    mov si, bs_str
+    call pr
     jmp rd
 
 ex:
@@ -56,32 +48,26 @@ ex:
     call eq
     jc d_hlp
 
-    mov si, buf
     mov di, c_cls
     call eq
     jc cs_fn
 
-    mov si, buf
-    mov di, c_ver
+    mov di, c_mem
     call eq
-    jc d_ver
+    jc d_mem
 
-    mov si, buf
     mov di, c_ech
     call ncmp
     jc d_ech
 
-    mov si, buf
     mov di, c_dte
     call eq
     jc d_dte
 
-    mov si, buf
     mov di, c_ext
     call eq
     jc d_ext
 
-    mov si, buf
     call pr
     mov si, err_m
     jmp pr_l
@@ -90,8 +76,40 @@ d_hlp:
     mov si, h_txt
     jmp pr_l
 
-d_ver:
-    mov si, v_msg
+d_mem:
+    mov ax, 0xe801
+    int 0x15
+    jc .err
+    test ax, ax
+    jnz .s
+    mov ax, cx
+    mov bx, dx
+.s:
+    push bx
+    mov cl, 10
+    shr ax, cl
+    pop bx
+    shr bx, 4
+    add ax, bx
+    inc ax
+    xor cx, cx
+    mov bp, 10
+.dl:
+    xor dx, dx
+    div bp
+    push dx
+    inc cx
+    test ax, ax
+    jnz .dl
+.pl:
+    pop ax
+    add al, '0'
+    call pc
+    loop .pl
+    mov si, mb_msg
+    jmp pr_l
+.err:
+    mov si, err_m
     jmp pr_l
 
 cs_fn:
@@ -147,30 +165,26 @@ pr_n:
     jmp ml
 
 pr:
-    mov bx, 7
-pr_c:
     lodsb
     test al, al
     jz .d
-    mov ah, 0x0e
-    int 0x10
-    jmp pr_c
+    call pc
+    jmp pr
 .d:
     ret
 
 pc:
     mov ah, 0x0e
-    mov bx, 7
     int 0x10
     ret
 
 pb:
     push ax
     shr al, 4
-    call .d
+    call .p
     pop ax
     and al, 0x0f
-.d:
+.p:
     add al, '0'
     jmp pc
 
@@ -196,35 +210,35 @@ ncmp:
     push si
     push di
 .sl:
+    lodsb
     mov bl, [di]
     test bl, bl
     jz .y
-    lodsb
     cmp al, bl
     jne .n
     inc di
     jmp .sl
 .n:
-    pop di
-    pop si
     clc
-    ret
+    jmp .x
 .y:
+    stc
+.x:
     pop di
     pop si
-    stc
     ret
 
 nl    db 13, 10, 0
 err_m db 'err', 13, 10, 0
+bs_str db 8, ' ', 8, 0
 c_hlp db 'help', 0
 c_cls db 'cls', 0
-c_ver db 'ver', 0
+c_mem db 'mem', 0
 c_ech db 'echo ', 0
 c_dte db 'date', 0
 c_ext db 'exit', 0
-h_txt db 'help,cls,ver,echo,date,exit', 13, 10, 0
-v_msg db 'BIOS Shell v1.1', 0
+h_txt db 'help,cls,mem,echo,date,exit', 13, 10, 0
+mb_msg db ' MB', 0
 
 times 446-($-$$) db 0
 
