@@ -9,9 +9,15 @@ This project can be used for educational purposes. <br>
 5. Reboot your PC into the Boot menu
 6. Select your USB drive
 ## Commands
-<li>help</li>  lists all commands
-<li>cls</li>  clears the console
-<li>mem</li>  shows free megabytes on the RAM
-<li>echo</li>  prints a message
-<li>date</li>  shows the date
-<li>exit</li>  exits the shell
+<li>help</li>
+lists all commands
+<li>cls</li>
+clears the console
+<li>mem</li>
+shows free megabytes on the RAM
+<li>echo</li>
+prints a message
+<li>date</li>
+shows the date
+<li>exit</li>
+exits the shell
