@@ -1,7 +1,3 @@
-; BIOS Shell v1.2
-; This project can be used for educational purpouses.
-; COMPILE THIS USING NASM ONLY
-
 [org 0x7c00]
 bits 16
 
@@ -230,7 +226,7 @@ ncmp:
     ret
 
 nl    db 13, 10, 0
-err_m db 'err', 13, 10, 0
+err_m db ' err', 13, 10, 0
 bs_str db 8, ' ', 8, 0
 c_hlp db 'help', 0
 c_cls db 'cls', 0
